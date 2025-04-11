@@ -141,6 +141,16 @@
         border: 3px solid #fff;
         border-radius: 5px;
       }
+      /* 頁尾*/
+      .footer-note {
+        text-align: center;
+        font-size: 0.9em;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
+        color: #eee;
+        opacity: 0.8;
+      }
     </style>
   </head>
   <body>
@@ -199,16 +209,6 @@
             <option value="black">黑色</option>
           </select>
         </div>
-        <!-- 本地圖片上傳 -->
-        <!-- <div class="form-group">
-          <label for="fileUpload">上傳本地圖片</label>
-          <input
-            type="file"
-            id="fileUpload"
-            class="form-control-file"
-            @change="showImg($event)"
-            accept="image/*" />
-        </div> -->
         <!-- 圖片上傳 + 預設圖 -->
         <div class="form-group">
           <label for="fileUpload">背景圖片</label>
@@ -260,7 +260,13 @@
         </button>
       </form>
     </div>
-
+    <!-- 頁尾提醒與版權 -->
+    <div class="footer-note">
+      <strong>免責聲明</strong
+      ><br />*本工具為自動生成程式，內容依賴上傳資料與輸入內容，若有格式錯誤、內容遺漏等情形，請使用者自行確認與修正，開發者不對最終輸出結果負責。*
+      <br />
+      &copy; 2025 PPT Creator Tools. All rights reserved.
+    </div>
     <!-- 引入外部 JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <!-- 引入 pptxgenjs 最新版本 -->
