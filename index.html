@@ -35,7 +35,7 @@
       }
       /* 主容器樣式 */
       .container {
-        margin-top: 50px;
+        margin-top: 20px;
         background-color: rgba(0, 0, 0, 0.6);
         padding: 30px 40px;
         border-radius: 15px;
@@ -44,10 +44,10 @@
       /* Logo 區塊 */
       .logo {
         text-align: center;
-        margin-bottom: 20px;
+        /* margin-bottom: 10px; */
       }
       .logo img {
-        max-width: 150px;
+        max-width: 100px;
       }
       /* 頁面標題 */
       h1 {
@@ -111,7 +111,7 @@
           <select
             v-model="type"
             class="form-control">
-            <option value="1">SmartKids</option>
+            <option value="1">上方底圖＋歌詞</option>
           </select>
         </div>
         <!-- 版面選擇：4:3 與 16:9（預設為 16:9） -->
@@ -260,7 +260,7 @@
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, "0");
             const dd = String(today.getDate()).padStart(2, "0");
-            const fileName = `smartKids_${yyyy}${mm}${dd}.pptx`;
+            const fileName = `ppcCreatorTools_${yyyy}${mm}${dd}.pptx`;
 
             // 產生並下載 PPT 檔案
             pptx
