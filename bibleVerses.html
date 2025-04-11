@@ -282,12 +282,15 @@
         </div>
         <!-- 手動輸入經文 -->
         <div class="form-group">
-          <label>直接輸入經文（標題＋內文）</label>
+          <label>手動輸入經文（標題＋內文）</label>
           <textarea
             class="form-control"
             rows="10"
             v-model="manualVerse"
-            @blur="parseManualVerse">
+            placeholder="例如：
+創世紀 1:1
+起初，神創造天地 。
+            ">
           </textarea>
         </div>
         <!-- 生成按鈕 -->
@@ -540,14 +543,23 @@
 
           // 主功能：根據 sections 中的段落建立 PPT 檔案
           lanuch() {
+            if (!this.image) {
+              alert("請先上傳圖片！或用預設圖片");
+              return;
+            }
+
             if (!this.sections.length) {
               // 若 manualVerse 有內容，先嘗試解析
               if (this.manualVerse.trim()) {
                 this.parseManualVerse();
-              }
 
-              // 若還是沒解析出 sections，就提示錯誤
-              if (!this.sections.length) {
+                // 解析後馬上再檢查一次
+                if (!this.sections.length) {
+                  alert("手動輸入格式錯誤，請確認第一行是標題，其餘為經文內容");
+                  return;
+                }
+              } else {
+                // 兩種都沒有
                 alert("請先上傳 Word 檔或輸入經文內容！");
                 return;
               }
@@ -614,10 +626,10 @@
             const title = lines[0];
             const content = lines.slice(1).join("\n").trim().replace(/祢/g, "你");
 
-            if (!title || !content) {
-              alert("請輸入正確格式：第一行是經文標題，後面是內容");
-              return;
-            }
+            // if (!title || !content) {
+            //   alert("請輸入正確格式：第一行是經文標題，後面是內容");
+            //   return;
+            // }
 
             const chunks = splitLyricsByMeaning(content, this.getMaxCharsPerSlide(this.fontType));
             const parsedSections = [];
@@ -651,8 +663,7 @@
             this.sections = [];
             this.sectionCount = 0;
             this.showDownloadTip = false;
-
-            // 清空檔案輸入欄（避免相同檔案上傳無反應）
+            this.manualVerse = "";
             const fileInputs = document.querySelectorAll("input[type='file']");
             fileInputs.forEach((input) => (input.value = ""));
 
