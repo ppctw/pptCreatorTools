@@ -79,6 +79,18 @@
         border-radius: 5px;
         padding: 10px;
       }
+      select.form-control {
+        font-size: 1em;
+        padding: 0.6em 1em;
+        line-height: 1.4;
+        height: auto;
+        border-radius: 8px;
+        border: none;
+        background-color: rgba(255, 255, 255, 0.95);
+        color: #333;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        appearance: none;
+      }
       /* 按鈕樣式 */
       .btn-primary {
         background: linear-gradient(45deg, #ff416c, #ff4b2b);
@@ -93,6 +105,36 @@
       .btn-primary:hover {
         transform: scale(1.05);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+      .btn-secondary {
+        background: linear-gradient(45deg, #3b4c72, #5a6d94); /* 深藍灰漸層 */
+        border: none;
+        padding: 10px 20px;
+        font-size: 1.1em;
+        border-radius: 50px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+        color: #fff;
+      }
+
+      .btn-secondary:hover {
+        transform: scale(1.05);
+        background: linear-gradient(45deg, #324162, #4b5f84); /* hover 再暗一點 */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      .btn-simple {
+        background: linear-gradient(45deg, #4a90e2, #007bff); /* 藍色漸層 */
+        color: white;
+        border: none;
+        padding: 8px 18px;
+        font-size: 1em;
+        border-radius: 6px; /* 不要太圓 */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        transition: all 0.2s ease;
+      }
+      .btn-simple:hover {
+        background: linear-gradient(45deg, #3a78cc, #006ae0);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
       }
       /* 預覽圖片外框 */
       .form-group img {
@@ -116,11 +158,13 @@
       <form @submit.prevent="lanuch">
         <!-- 樣式選擇 -->
         <div class="form-group">
-          <label for="pptStyle">樣式</label>
+          <label for="frame">樣式</label>
           <select
             v-model="type"
+            @change="navigate"
             class="form-control">
             <option value="1">上方底圖＋歌詞</option>
+            <option value="2">經文</option>
           </select>
         </div>
         <!-- 版面選擇：4:3 與 16:9（預設為 16:9） -->
@@ -142,7 +186,7 @@
             @change="changeFontType(fontType)">
             <option value="華康圓體W5注音">華康圓體W5注音</option>
             <option value="微軟正黑體">微軟正黑體</option>
-            <option value="Noto Sans CJK TC">Noto Sans CJK TC</option>
+            <option value="Noto Sans CJK TC Medium">Noto Sans CJK TC Medium</option>
           </select>
         </div>
         <!-- 字體顏色選擇：白色加黑色光暈 或 黑色 -->
@@ -156,7 +200,7 @@
           </select>
         </div>
         <!-- 本地圖片上傳 -->
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label for="fileUpload">上傳本地圖片</label>
           <input
             type="file"
@@ -164,6 +208,23 @@
             class="form-control-file"
             @change="showImg($event)"
             accept="image/*" />
+        </div> -->
+        <!-- 圖片上傳 + 預設圖 -->
+        <div class="form-group">
+          <label for="fileUpload">背景圖片</label>
+          <div style="display: flex; gap: 10px; align-items: center">
+            <input
+              type="file"
+              class="form-control-file"
+              @change="showImg($event)"
+              accept="image/*" />
+            <button
+              type="button"
+              class="btn btn-simple"
+              @click="useDefaultImage">
+              使用預設圖片
+            </button>
+          </div>
         </div>
         <!-- 預覽上傳的圖片 -->
         <div
@@ -176,12 +237,12 @@
         </div>
         <!-- 歌詞輸入 -->
         <div class="form-group">
-          <label for="lyricsText">歌詞（預設字體大小:55pt, 每行最多7個字）</label>
+          <label for="lyricsText">歌詞（預設字體大小:55pt, 每行建議7個字）</label>
           <textarea
             id="lyricsText"
             v-model="lyricsText"
             class="form-control"
-            rows="5"
+            rows="20"
             placeholder="請輸入歌詞"></textarea>
         </div>
         <!-- 生成 PPT 按鈕 -->
@@ -189,6 +250,13 @@
           type="submit"
           class="btn btn-primary">
           生成 PPT
+        </button>
+        <!-- 清除按鈕 -->
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="clearForm">
+          清除內容
         </button>
       </form>
     </div>
@@ -208,7 +276,31 @@
           lyricsText: "", // 歌詞文本
           image: "" // 本地上傳圖片的暫存 URL
         },
+        mounted() {
+          // 根據當前網址設定 type
+          const currentPage = window.location.pathname;
+          if (currentPage.includes("bibleVerses.html")) {
+            this.type = "2";
+          } else {
+            this.type = "1";
+          }
+        },
         methods: {
+          //切換類型
+          navigate() {
+            if (this.type === "1" && !window.location.pathname.includes("index.html")) {
+              window.location.href = "index.html";
+            } else if (
+              this.type === "2" &&
+              !window.location.pathname.includes("bibleVerses.html")
+            ) {
+              window.location.href = "bibleVerses.html";
+            }
+          },
+          useDefaultImage() {
+            this.image = "images/default_bg.jpg"; // 圖片路徑可自行調整
+            console.log(" 套用預設背景圖片");
+          },
           // 當使用者改變字體選擇時
           changeFontType(font) {
             this.fontType = font;
@@ -223,7 +315,11 @@
           // 生成 PPT 的主要函數（使用最新 pptxgenjs API）
           lanuch() {
             if (!this.image) {
-              alert("請先上傳圖片！");
+              alert("請先上傳圖片！或用預設圖片");
+              return;
+            }
+            if (!this.lyricsText.length) {
+              alert("請輸入歌詞！");
               return;
             }
             // 建立 PPTX 實例
@@ -280,6 +376,15 @@
               .catch((err) => {
                 console.error(err);
               });
+          },
+          clearForm() {
+            (this.type = 1), // PPT 樣式，目前僅有 SmartKids
+              (this.frame = "16:9"), // 預設版面比例（16:9）
+              (this.fontType = "華康圓體W5注音"), // 預設字體
+              (this.fontColor = "black"), // 預設字體顏色為黑色
+              (this.lyricsText = ""), // 歌詞文本
+              (this.image = ""); // 本地上傳圖片的暫存 URL
+            document.getElementById("fileUpload").value = null;
           }
         }
       });

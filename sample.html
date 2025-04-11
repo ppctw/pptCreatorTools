@@ -2,70 +2,287 @@
 <html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
-    <title>PPT 生成器</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1" />
+    <title>PPT Creator Tools</title>
+    <meta
+      name="description"
+      content="Quick and easy tool to generate PowerPoint slides in seconds." />
+
+    <!-- 加入 Favicon -->
+    <link
+      rel="icon"
+      href="images/favicon.ico"
+      type="image/x-icon" />
+    <!-- 引入外部 CSS (Bootstrap) -->
+    <link
+      rel="stylesheet"
+      href="vendor/bootstrap/css/bootstrap.min.css" />
+    <!-- 內嵌炫麗的自訂 CSS -->
+    <style>
+      /* 全站背景：動態漸層效果 */
+      body {
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+        color: #fff;
+        font-family: "Noto Sans", "微軟正黑體", "華康圓體W5注音", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      /* 主容器樣式 */
+      .container {
+        margin-top: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 30px 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      }
+      /* Logo 區塊 */
+      .logo {
+        text-align: center;
+        /* margin-bottom: 10px; */
+      }
+      .logo img {
+        max-width: 100px;
+      }
+      /* 頁面標題 */
+      h1 {
+        text-align: center;
+        font-size: 3em;
+        margin-bottom: 30px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+      }
+      /* 表單標籤 */
+      .form-group label {
+        font-weight: bold;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+      }
+      /* 輸入框、下拉選單與文字區 */
+      .form-control,
+      .form-control-file,
+      textarea {
+        background-color: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 5px;
+        padding: 10px;
+      }
+      /* 按鈕樣式 */
+      .btn-primary {
+        background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        border: none;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s, box-shadow 0.2s;
+        color: #fff;
+      }
+      .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+      /* 預覽圖片外框 */
+      .form-group img {
+        border: 3px solid #fff;
+        border-radius: 5px;
+      }
+    </style>
   </head>
   <body>
-    <h1>PPT 生成器</h1>
-    <form id="pptForm">
-      <div>
-        <label for="title">標題:</label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          required />
+    <!-- 主容器 -->
+    <div
+      id="app"
+      class="container">
+      <!-- Logo 區塊 -->
+      <div class="logo">
+        <img
+          src="images/logo2.png"
+          alt="LOGO" />
       </div>
-      <div>
-        <label for="content">內容:</label>
-        <textarea
-          id="content"
-          name="content"
-          rows="4"
-          cols="50"
-          required></textarea>
-      </div>
-      <div>
+      <h1>PPT Creator Tools</h1>
+      <form @submit.prevent="lanuch">
+        <!-- 樣式選擇 -->
+        <div class="form-group">
+          <label for="pptStyle">樣式</label>
+          <select
+            v-model="type"
+            class="form-control">
+            <option value="1">上方底圖＋歌詞</option>
+          </select>
+        </div>
+        <!-- 版面選擇：4:3 與 16:9（預設為 16:9） -->
+        <div class="form-group">
+          <label for="frame">版面</label>
+          <select
+            v-model="frame"
+            class="form-control">
+            <option value="4:3">4:3</option>
+            <option value="16:9">16:9</option>
+          </select>
+        </div>
+        <!-- 字體選擇 -->
+        <div class="form-group">
+          <label for="fontType">字體</label>
+          <select
+            v-model="fontType"
+            class="form-control"
+            @change="changeFontType(fontType)">
+            <option value="華康圓體W5注音">華康圓體W5注音</option>
+            <option value="微軟正黑體">微軟正黑體</option>
+            <option value="Noto Sans CJK TC">Noto Sans CJK TC</option>
+          </select>
+        </div>
+        <!-- 字體顏色選擇：白色加黑色光暈 或 黑色 -->
+        <div class="form-group">
+          <label for="fontColor">字體顏色</label>
+          <select
+            v-model="fontColor"
+            class="form-control">
+            <option value="whiteHalo">白色加黑色光暈</option>
+            <option value="black">黑色</option>
+          </select>
+        </div>
+        <!-- 本地圖片上傳 -->
+        <div class="form-group">
+          <label for="fileUpload">上傳本地圖片</label>
+          <input
+            type="file"
+            id="fileUpload"
+            class="form-control-file"
+            @change="showImg($event)"
+            accept="image/*" />
+        </div>
+        <!-- 預覽上傳的圖片 -->
+        <div
+          class="form-group"
+          v-if="image">
+          <img
+            :src="image"
+            alt="預覽圖片"
+            style="max-width: 200px; margin-top: 10px" />
+        </div>
+        <!-- 歌詞輸入 -->
+        <div class="form-group">
+          <label for="lyricsText">歌詞（預設字體大小:55pt, 每行最多7個字）</label>
+          <textarea
+            id="lyricsText"
+            v-model="lyricsText"
+            class="form-control"
+            rows="5"
+            placeholder="請輸入歌詞"></textarea>
+        </div>
+        <!-- 生成 PPT 按鈕 -->
         <button
-          type="button"
-          onclick="generatePPT()">
+          type="submit"
+          class="btn btn-primary">
           生成 PPT
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
 
-    <!-- 確保在文檔的最底部載入 PptxGenJS -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.10.3/sweetalert2.js"
-      type="text/javascript"></script>
+    <!-- 引入外部 JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <!-- Bundle: Easiest to use, supports all browsers -->
-    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@2.5.0/dist/pptxgen.bundle.js"></script>
-
-    <!-- Individual files: Add only what's needed to avoid clobbering loaded libraries -->
-
-    <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-
-    <script src="js/jquery-2.1.3.min.js"></script>
-    <script src="js/plugins.js"></script>
-    <script src="js/main.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.1/vue.min.js"></script>
+    <!-- 引入 pptxgenjs 最新版本 -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs/dist/pptxgen.bundle.js"></script>
     <script>
-      function generatePPT() {
-        let pptx = new PptxGenJS();
-        let slide = pptx.addSlide();
+      new Vue({
+        el: "#app",
+        data: {
+          type: 1, // PPT 樣式，目前僅有 SmartKids
+          frame: "16:9", // 預設版面比例（16:9）
+          fontType: "華康圓體W5注音", // 預設字體
+          fontColor: "black", // 預設字體顏色為黑色
+          lyricsText: "", // 歌詞文本
+          image: "" // 本地上傳圖片的暫存 URL
+        },
+        methods: {
+          // 當使用者改變字體選擇時
+          changeFontType(font) {
+            this.fontType = font;
+          },
+          // 上傳圖片：利用 URL.createObjectURL 取得檔案的暫存 URL
+          showImg(event) {
+            const file = event.target.files[0];
+            if (file) {
+              this.image = URL.createObjectURL(file);
+            }
+          },
+          // 生成 PPT 的主要函數（使用最新 pptxgenjs API）
+          lanuch() {
+            if (!this.image) {
+              alert("請先上傳圖片！");
+              return;
+            }
+            // 建立 PPTX 實例
+            const pptx = new PptxGenJS();
+            // 設定版面比例
+            pptx.layout = this.frame === "16:9" ? "LAYOUT_16x9" : "LAYOUT_4x3";
+            // 根據版面決定文字 margin：16:9 為 8，其它為 12
+            const textMargin = this.frame === "16:9" ? 8 : 12;
+            // 將歌詞以空行分隔，每段建立一張幻燈片
+            const lines = this.lyricsText.split("\n\n");
+            lines.forEach((line) => {
+              let slide = pptx.addSlide();
+              // 設定幻燈片背景為黑色
+              slide.background = { fill: "000000" };
+              // 加入上傳的本地圖片作為背景（高度 2 英吋）
+              slide.addImage({
+                path: this.image,
+                x: 0,
+                y: 0,
+                w: 10,
+                h: 2
+              });
+              // 根據歌詞文字長度決定文字大小（範例邏輯）
+              const textSize = line.length <= 9 ? 32 : 40;
+              // 設定文字選項（依據字體顏色選擇是否加入光暈效果）
+              let textOptions = {
+                x: 0,
+                y: 1.0,
+                w: 10,
+                fontSize: textSize,
+                fontFace: this.fontType,
+                color: this.fontColor === "whiteHalo" ? "FFFFFF" : "000000",
+                align: "center",
+                margin: textMargin
+              };
+              if (this.fontColor === "whiteHalo") {
+                textOptions.shadow = { type: "outer", color: "000000", offset: 2, blur: 0 };
+              }
+              slide.addText(line.replace(/祢/g, "你"), textOptions);
+            });
+            // 取得當天日期，組合檔案名稱，例如 "smartKids_20250206.pptx"
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, "0");
+            const dd = String(today.getDate()).padStart(2, "0");
+            const fileName = `ppcCreatorTools_${yyyy}${mm}${dd}.pptx`;
 
-        // 獲取用戶輸入的標題和內容
-        let title = document.getElementById("title").value;
-        let content = document.getElementById("content").value;
-
-        // 添加標題和內容到幻燈片
-        slide.addText(title, { x: 0.5, y: 0.5, fontSize: 24, color: "363636", align: "center" });
-        slide.addText(content, { x: 0.5, y: 1.5, fontSize: 18, color: "666666", align: "center" });
-
-        // 生成並保存 PPT 文件
-        pptx.writeFile({ fileName: "生成的PPT.pptx" });
-      }
+            // 產生並下載 PPT 檔案
+            pptx
+              .writeFile({ fileName: fileName })
+              .then(() => {
+                console.log("Presentation created successfully!");
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
+        }
+      });
     </script>
   </body>
 </html>
